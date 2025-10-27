@@ -11,7 +11,9 @@
 
 # 注意点
 <br>1、如果出现无法引用的命名空间，可以参考CustomHotkeyExample.csproj进行对照</br>
-<br>2、用户需要先激活该模组，然后再启用后置模组。如果启用时仍无法生效，尝试重新订阅后置模组或重启游戏</br>
+<br>2、用户需要先激活该模组，然后再启用后置模组。如果启用后仍无法生效，尝试重新订阅其后置模组或重启游戏</br>
 <br>3、避免产生依赖，你的模组需要在关闭本模组的情况下仍能正常运行。这应该比较好做到，因为本模组只提供了改键功能，你只要和示例中一样在获取失败时使用默认按键即可。</br>
+
+<img width="1200" height="829" alt="image" src="https://github.com/user-attachments/assets/f22b9c87-3edc-4bdf-b5d8-bee112059137" />
 
 配置文件位置 C:\Users\UserName\AppData\LocalLow\TeamSoda\Duckov\Saves\CustomHotkey.txt
