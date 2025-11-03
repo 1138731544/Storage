@@ -15,31 +15,33 @@ namespace CustomHotkeyExample
         private static Duckov.Modding.ModBehaviour? customHotkey;
         
         private static MethodInfo? addNewHotkeyMethod;
+        private static MethodInfo? removeHotkeyMethod;
         private static MethodInfo? getHotkeyMethod;
         private static EventInfo? onCustomHotkeyChangedEvent;
         
         /// <summary>
-        /// 初始化
+        /// 尝试初始化
         /// </summary>
         /// <remarks>该方法需要首先调用，用来缓存一些反射用的变量</remarks>
-        public static void Init()
+        public static void TryInit()
         {
             if (customHotkey != null)
                 return;
             (bool isFind, ModInfo modInfo) findResult = TryGetCustomHotkeyModInfo();
             if (!findResult.isFind)
             {
-                Debug.Log($"{ModName}：未找到CustomHotkey模组信息");
+                //Debug.Log($"{ModName}：未找到CustomHotkey模组信息");
                 return;
             }
             if (!ModManager.IsModActive(findResult.modInfo, out customHotkey))
             {
-                Debug.Log($"{ModName}：CustomHotkey模组未激活");
+                //Debug.Log($"{ModName}：CustomHotkey模组未激活");
                 return;
             }
 
             Type customHotkeyType = customHotkey.GetType();
             addNewHotkeyMethod = customHotkeyType.GetMethod("AddNewHotkey", BindingFlags.Public | BindingFlags.Instance);
+            removeHotkeyMethod = customHotkeyType.GetMethod("RemoveHotkey", BindingFlags.Public | BindingFlags.Instance);
             getHotkeyMethod = customHotkeyType.GetMethod("GetHotkey", BindingFlags.Public | BindingFlags.Instance);
             onCustomHotkeyChangedEvent = customHotkeyType.GetEvent("OnCustomHotkeyChanged", BindingFlags.Public | BindingFlags.Static);
         }
@@ -54,10 +56,24 @@ namespace CustomHotkeyExample
         {
             if (customHotkey == null)
             {
-                Debug.Log($"{ModName}：未找到CustomHotkey模组实例");
+                //Debug.Log($"{ModName}：未找到CustomHotkey模组实例");
                 return;
             }
             addNewHotkeyMethod?.Invoke(customHotkey, new object[] { ModName, saveName, defaultHotkey, showName });
+        }
+        
+        /// <summary>
+        /// 移除自定义热键
+        /// </summary>
+        /// <param name="saveName">保存的热键名</param>
+        public static void RemoveHotkey(string saveName)
+        {
+            if (customHotkey == null)
+            {
+                //Debug.Log($"{ModName}：未找到CustomHotkey模组实例");
+                return;
+            }
+            removeHotkeyMethod?.Invoke(customHotkey, new object[] { ModName, saveName });
         }
         
         /// <summary>
@@ -68,7 +84,7 @@ namespace CustomHotkeyExample
         {
             if (customHotkey == null)
             {
-                Debug.Log($"{ModName}：未找到CustomHotkey模组实例");
+                //Debug.Log($"{ModName}：未找到CustomHotkey模组实例");
                 return KeyCode.None;
             }
 
@@ -79,9 +95,10 @@ namespace CustomHotkeyExample
         }
         
         /// <summary>
-        /// 添加当热键修改时的回调
+        /// 尝试添加当热键修改时的回调
         /// </summary>
-        public static void AddEvent2OnCustomHotkeyChangedEvent(Action callback)
+        /// <remarks>多次调用并不会重复添加回调</remarks>
+        public static void TryAddEvent2OnCustomHotkeyChangedEvent(Action callback)
         {
             if (onCustomHotkeyChangedEvent == null)
                 return;
