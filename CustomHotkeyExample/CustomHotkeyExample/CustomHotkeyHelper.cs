@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Duckov.Modding;
 using UnityEngine;
@@ -83,7 +83,10 @@ namespace CustomHotkeyExample
         /// </summary>
         public static void AddEvent2OnCustomHotkeyChangedEvent(Action callback)
         {
-            onCustomHotkeyChangedEvent?.AddEventHandler(null, callback);
+            if (onCustomHotkeyChangedEvent == null)
+                return;
+            onCustomHotkeyChangedEvent.RemoveEventHandler(null, callback);
+            onCustomHotkeyChangedEvent.AddEventHandler(null, callback);
         }
         
         /// <summary>
