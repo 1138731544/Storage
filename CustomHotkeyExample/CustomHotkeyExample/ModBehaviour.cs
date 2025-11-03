@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Duckov.Modding;
 
@@ -7,6 +7,7 @@ namespace CustomHotkeyExample
     public class ModBehaviour : Duckov.Modding.ModBehaviour
     {
         #region 需要复制的部分
+        // * 改为你的变量和热键名
         private const string YourHotkeyName = "example";
         private const KeyCode DefaultYourHotkey = KeyCode.N;
         private KeyCode yourHotkey = DefaultYourHotkey;
@@ -23,19 +24,17 @@ namespace CustomHotkeyExample
             ModManager.OnScan += OnModScan;
         }
         
-        private void OnModScan(List<ModInfo> _)
-        {
-            // 在主流程获取模组信息后触发热键获取
-            GetCustomHotkey();
-            // 先移除后添加防止反复进出主界面导致的监听溢出
-            CustomHotkeyHelper.RemoveEvent2OnCustomHotkeyChangedEvent(GetCustomHotkey);
-            CustomHotkeyHelper.AddEvent2OnCustomHotkeyChangedEvent(GetCustomHotkey);
-        }
-
         private void OnDisable()
         {
             ModManager.OnScan -= OnModScan;
             CustomHotkeyHelper.RemoveEvent2OnCustomHotkeyChangedEvent(GetCustomHotkey);
+        }
+        
+        private void OnModScan(List<ModInfo> _)
+        {
+            // 在主流程获取模组信息后触发热键获取
+            GetCustomHotkey();
+            CustomHotkeyHelper.AddEvent2OnCustomHotkeyChangedEvent(GetCustomHotkey);
         }
         
         /// <summary>
