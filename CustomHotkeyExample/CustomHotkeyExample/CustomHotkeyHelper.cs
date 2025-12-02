@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Duckov.Modding;
 using UnityEngine;
 using System.Reflection;
+using Object = UnityEngine.Object;
 
 // * 改为你的命名空间
 namespace CustomHotkeyExample
@@ -33,10 +34,15 @@ namespace CustomHotkeyExample
                 //Debug.Log($"{ModName}：未找到CustomHotkey模组信息");
                 return;
             }
+            
             if (!ModManager.IsModActive(findResult.modInfo, out customHotkey))
             {
                 //Debug.Log($"{ModName}：CustomHotkey模组未激活");
-                return;
+
+                // 处理特殊情况下未成功从ModManager获取CustomHotkey实例的情况
+                customHotkey = TryGetCustomHotkey();
+                if (customHotkey == null) 
+                    return;
             }
 
             Type customHotkeyType = customHotkey.GetType();
@@ -114,6 +120,10 @@ namespace CustomHotkeyExample
             onCustomHotkeyChangedEvent?.RemoveEventHandler(null, callback);
         }
 
+        
+        /// <summary>
+        /// 尝试获取自定义按键模组信息
+        /// </summary>
         private static (bool isFind, ModInfo modInfo) TryGetCustomHotkeyModInfo()
         {
             List<ModInfo>? modInfos = ModManager.modInfos;
@@ -126,5 +136,24 @@ namespace CustomHotkeyExample
             }
             return (false, default);
         }
+        
+        /// <summary>
+        /// 尝试从所有程序集中获取自定义按键
+        /// </summary>
+        private static Duckov.Modding.ModBehaviour? TryGetCustomHotkey()
+        {
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies)
+            {
+                if (!assembly.FullName.Contains("CustomHotkey"))
+                    continue;
+                var type = assembly.GetType("CustomHotkey.ModBehaviour");
+                if (type == null)
+                    return null;
+                return Object.FindObjectOfType(type) as Duckov.Modding.ModBehaviour;
+            }
+            return null;
+        }
     }
 }
+
